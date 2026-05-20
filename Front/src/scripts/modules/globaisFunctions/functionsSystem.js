@@ -1,5 +1,7 @@
 import { ActiveTask } from "../services/requests.js";
+import { CreateTask } from "../services/requests.js";
 import { BASE_URL } from "../../control/universalPath.js";
+import { listarTarefas } from "../services/requests.js";
 
 export async function startPage(funcListarTarefas, end) {
     try {
@@ -25,7 +27,7 @@ export function styleInputError() {
     const btn_add = document.querySelector("#btn_add");
     const error_text = document.querySelector("#error_text");
 
-    btn_add.addEventListener("click", () => {
+    btn_add.addEventListener("click", async () => {
 
         if (input.value.trim() === "") {
             styleInput(input, "error");
@@ -34,6 +36,17 @@ export function styleInputError() {
         }
 
         console.log(input.value);
+
+        try {
+            const data = await CreateTask(`${BASE_URL}/tasks/add`, input.value.trim());
+            console.log("Tarefa criada:", data);
+            await startPage(listarTarefas, BASE_URL + "/tasks/list");
+            
+        } catch (error) {
+            console.error("Erro ao criar tarefa:", error);
+            // tratar com modal de erro
+        }
+        
         input.value = "";
     });
 
@@ -45,6 +58,9 @@ export function styleInputError() {
 
 
 }
+
+
+
 
 
 

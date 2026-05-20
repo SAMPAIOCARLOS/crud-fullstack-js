@@ -41,4 +41,28 @@ export async function ActiveTask(endpoint, taskId, done) {
 }
 
 
+export async function CreateTask(endpoint, title) {
+    try {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ title })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao criar tarefa: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        return data;
+    } catch (error) {
+        console.error("Erro ao criar tarefa:", error);
+        throw error;
+    }
+}
+
+
 
