@@ -1,7 +1,7 @@
 const connection = require("../config/db");
 
 function listTasks(req, res) {
-    connection.query("SELECT * FROM tasks", (err, results) => {
+    connection.query("SELECT * FROM tasks ORDER BY id DESC", (err, results) => {
         // err = se deu erro
         // results = o que veio do banco
 

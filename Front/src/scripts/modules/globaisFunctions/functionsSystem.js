@@ -3,12 +3,16 @@ import { CreateTask } from "../services/requests.js";
 import { BASE_URL } from "../../control/universalPath.js";
 import { listarTarefas } from "../services/requests.js";
 
+
+
+
 export async function startPage(funcListarTarefas, end) {
     try {
         const data = await funcListarTarefas(end);
 
         if (!data || !Array.isArray(data)) {
             throw new Error("Dados inválidos recebidos do servidor.");
+            showErrorModal("Erro ao carregar as tarefas. Por favor, tente novamente mais tarde.");
         }
 
         createItemList(data);
@@ -16,49 +20,35 @@ export async function startPage(funcListarTarefas, end) {
 
         
     } catch (error) {
-        console.error("Error in startPage function:", error);
-        alert("Ocorreu um erro ao listar as tarefas. Por favor, tente novamente mais tarde.");
+        console.error("Erro ao listar tarefas:", error);
+        showErrorModal("Erro ao carregar as tarefas. Por favor, tente novamente mais tarde.");
     }
 }
 
 
-export function styleInputError() {
-    const input = document.querySelector("#task_input");
-    const btn_add = document.querySelector("#btn_add");
-    const error_text = document.querySelector("#error_text");
+export function showErrorModal(message) {
+    const modal = document.querySelector("#container_modal_error");
+    const modalMessage = document.querySelector("#error_message");
+    const closeButton = document.querySelector("#btn_close_modal");
 
-    btn_add.addEventListener("click", async () => {
+    if (!modal || !modalMessage || !closeButton) {
+        console.error("Elementos do modal não encontrados.");
+        return;
+    }
 
-        if (input.value.trim() === "") {
-            styleInput(input, "error");
-            error_text.style.opacity = "1";
-            return;
+    modalMessage.textContent = message;
+    modal.classList.remove("hidden");
+
+    closeButton.onclick = () => {
+        modal.classList.add("hidden");
+    };
+
+    modal.onclick = (event) => {
+        if (event.target === modal) {
+            modal.classList.add("hidden");
         }
-
-        console.log(input.value);
-
-        try {
-            const data = await CreateTask(`${BASE_URL}/tasks/add`, input.value.trim());
-            console.log("Tarefa criada:", data);
-            await startPage(listarTarefas, BASE_URL + "/tasks/list");
-            
-        } catch (error) {
-            console.error("Erro ao criar tarefa:", error);
-            // tratar com modal de erro
-        }
-        
-        input.value = "";
-    });
-
-
-    input.addEventListener("input", () => {
-        removeStyleInput(input, "error");
-        error_text.style.opacity = "0";
-    });
-
-
+    };
 }
-
 
 
 
@@ -96,7 +86,7 @@ export function createItemList(tasks) {
                 taskText.classList.toggle("done");
             } catch (error) {
                 console.error("Erro ao atualizar tarefa:", error);
-                // tratar com modal de erro
+                showErrorModal("Erro ao finalizar tarefa. Por favor, tente novamente mais tarde.");
             }
         });
 
