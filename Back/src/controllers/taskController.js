@@ -25,15 +25,16 @@ function toggleTask(req, res) {
         });
     });
 }
-    
+
 function createTask(req, res) {
-    // const { title, description } = req.body;
-    // connection.query("INSERT INTO tasks (title, description) VALUES (?, ?)", [title, description], (err, results) => {
-    //     if (err) {
-    //         return res.status(500).json({ error: err.message });
-    //     }
-    //     res.json(results);
-    // });
+    connection.query("INSERT INTO tasks (title) VALUES (?)", [req.body.title], (err, results) => {
+
+        if (err) return res.status(500).json({ error: err.message });
+        if (results.affectedRows === 0) return res.status(500).json({ error: "Erro ao criar tarefa" });
+        if (!req.body.title) return res.status(400).json({ error: "Título é obrigatório" });
+
+        res.json({ message: "Tarefa criada!", id: results.insertId });
+    });
 }
 
 function updateTask(req, res) {
