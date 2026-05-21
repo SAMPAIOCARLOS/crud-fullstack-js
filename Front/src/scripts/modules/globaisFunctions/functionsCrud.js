@@ -40,7 +40,6 @@ export function createNewTask() {
         error_text.style.opacity = "0";
     });
 
-
 }
 
 function editItem() {
